@@ -190,8 +190,9 @@ fn search_rooute(node: &Node, lab: &Vec<Vec<i32>>,i : i32) -> Vec<(i32, i32)> {
             let init: Node = Node::new((0,0));
 
             EXPLORED.lock().unwrap().push(init.clone().state);
+            let lab = get_lab();
 
-            search_rooute(&init, lab,0)
+            search_rooute(&init, &  lab,0)
 
         }
 
