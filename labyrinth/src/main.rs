@@ -36,13 +36,13 @@ impl Node {
         let y = y as usize;
 
         
-        if x < 7 && lab[x+1][y] == 0 {
+        if x < 17 && lab[x+1][y] == 0 {
             nodes_to_expand.push(self.expand((x as i32+2,y as i32)));
         }
         if x > 2 &&lab[x-1][y] == 0 {
             nodes_to_expand.push(self.expand((x as i32 - 2,y as i32)));
         }
-        if y < 7 && lab[x][y+1] == 0 {
+        if y < 17 && lab[x][y+1] == 0 {
             nodes_to_expand.push(self.expand((x as i32,y as i32 + 2)));
         }
         if y > 2 && lab[x][y-1] == 0 {
@@ -53,7 +53,7 @@ impl Node {
 
     fn heuristic(&self) -> i32 {
         let (x,y) = self.state;
-        (x - 9) + (y - 9)
+        (x - 19) + (y - 19)
     }
 
     fn expand(&self, state: (i32, i32)) -> Node {
@@ -76,12 +76,12 @@ impl Node {
 
 fn get_lab() -> Vec<Vec<i32>>{
         
-    let mut lab: Vec<Vec<i32>> = (0..10)
-       .map(|_| (0..10).collect())
+    let mut lab: Vec<Vec<i32>> = (0..20)
+       .map(|_| (0..20).collect())
         .collect();
 
-    for i in 0..10 {
-        for j in 0..10 {
+    for i in 0..20 {
+        for j in 0..20 {
 
             if i % 2 == 0 {
                 let mut rang = rand::thread_rng();
@@ -116,25 +116,40 @@ fn get_lab() -> Vec<Vec<i32>>{
     lab[0][0] = 0;
     lab[1][0] = 0;
 
-    lab[9][9] = 0;
-    lab[8][9] = 0;
+    lab[19][19] = 0;
+    lab[18][19] = 0;
     lab
 
 }
 
 fn print_lab(lab: &Vec<Vec<i32>>,route : Vec<(i32, i32)>) {
-    for i in 0..10 {
-        for j in 0..10 {
+    for i in 0..20 {
+        for j in 0..20 {
+
+            let flag: bool ={
+                let mut flag = false;
+                for state in route.iter() {
+                    if (i,j) == *state{
+                        flag = true;
+                    }
+                }    
+                flag
+            };
+            let i = i as usize;
+            let j = j as usize;
 
             
-            if lab[i][j] == 0 {
+            if flag {
                 print!("☐");
             }
-            if lab[i][j] == 1 {
+            else if lab[i][j] == 1 {
                 print!("|");
             }
-            if lab[i][j] == 2 {
+            else if lab[i][j] == 2 {
                 print!("-");
+            }
+            else {
+                print!(" ");
             }
             print!(" ");
 
@@ -145,7 +160,7 @@ fn print_lab(lab: &Vec<Vec<i32>>,route : Vec<(i32, i32)>) {
 
 fn search_rooute(node: &Node, lab: &Vec<Vec<i32>>,i : i32) -> Vec<(i32, i32)> {
     
-    if node.state == (8,8) {
+    if node.state == (18,18) {
         //objective reached
 
         println!("reached obj, route: ");
@@ -163,9 +178,23 @@ fn search_rooute(node: &Node, lab: &Vec<Vec<i32>>,i : i32) -> Vec<(i32, i32)> {
 
         FRONT.lock().unwrap().sort_by(|a,b| {a.heuristic.cmp(&b.heuristic)});
 
-        let next = FRONT.lock().unwrap().remove(0);
+        let flag = FRONT.lock().unwrap().is_empty();
+        if !flag{
+            let next = FRONT.lock().unwrap().remove(0);
 
-        search_rooute(&next, lab,i+1)
+            search_rooute(&next, lab,i+1)
+        }
+        else {
+            EXPLORED.lock().unwrap().clear();
+
+            let init: Node = Node::new((0,0));
+
+            EXPLORED.lock().unwrap().push(init.clone().state);
+
+            search_rooute(&init, lab,0)
+
+        }
+
 
        
 
@@ -182,7 +211,6 @@ fn main() {
     let lab = get_lab();    
 
     let route = search_rooute(&init, &lab,0);
-
-
+    print_lab(&lab, route);
 
 }
