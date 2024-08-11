@@ -36,13 +36,13 @@ impl Node {
         let y = y as usize;
 
         
-        if x < 17 && lab[x+1][y] == 0 {
+        if x < 27 && lab[x+1][y] == 0 {
             nodes_to_expand.push(self.expand((x as i32+2,y as i32)));
         }
         if x > 2 &&lab[x-1][y] == 0 {
             nodes_to_expand.push(self.expand((x as i32 - 2,y as i32)));
         }
-        if y < 17 && lab[x][y+1] == 0 {
+        if y < 27 && lab[x][y+1] == 0 {
             nodes_to_expand.push(self.expand((x as i32,y as i32 + 2)));
         }
         if y > 2 && lab[x][y-1] == 0 {
@@ -53,7 +53,7 @@ impl Node {
 
     fn heuristic(&self) -> i32 {
         let (x,y) = self.state;
-        (x - 19) + (y - 19)
+        (x - 29) + (y - 29)
     }
 
     fn expand(&self, state: (i32, i32)) -> Node {
@@ -76,12 +76,12 @@ impl Node {
 
 fn get_lab() -> Vec<Vec<i32>>{
         
-    let mut lab: Vec<Vec<i32>> = (0..20)
-       .map(|_| (0..20).collect())
+    let mut lab: Vec<Vec<i32>> = (0..30)
+       .map(|_| (0..30).collect())
         .collect();
 
-    for i in 0..20 {
-        for j in 0..20 {
+    for i in 0..30 {
+        for j in 0..30 {
 
             if i % 2 == 0 {
                 let mut rang = rand::thread_rng();
@@ -116,15 +116,15 @@ fn get_lab() -> Vec<Vec<i32>>{
     lab[0][0] = 0;
     lab[1][0] = 0;
 
-    lab[19][19] = 0;
-    lab[18][19] = 0;
+    lab[29][29] = 0;
+    lab[28][29] = 0;
     lab
 
 }
 
 fn print_lab(lab: &Vec<Vec<i32>>,route : Vec<(i32, i32)>) {
-    for i in 0..20 {
-        for j in 0..20 {
+    for i in 0..30 {
+        for j in 0..30 {
 
             let flag: bool ={
                 let mut flag = false;
@@ -160,10 +160,11 @@ fn print_lab(lab: &Vec<Vec<i32>>,route : Vec<(i32, i32)>) {
 
 fn search_rooute(node: &Node, lab: &Vec<Vec<i32>>,i : i32) -> Vec<(i32, i32)> {
     
-    if node.state == (18,18) {
+    if node.state == (28,28) {
         //objective reached
 
         println!("reached obj, route: ");
+        print_lab(lab, node.clone().route);
         node.clone().route
     }
     else{
@@ -192,7 +193,7 @@ fn search_rooute(node: &Node, lab: &Vec<Vec<i32>>,i : i32) -> Vec<(i32, i32)> {
             EXPLORED.lock().unwrap().push(init.clone().state);
             let lab = get_lab();
 
-            search_rooute(&init, &  lab,0)
+            search_rooute(&init, &lab,0)
 
         }
 
@@ -200,7 +201,7 @@ fn search_rooute(node: &Node, lab: &Vec<Vec<i32>>,i : i32) -> Vec<(i32, i32)> {
        
 
 
-    }
+    }   
 
 }
 
@@ -212,6 +213,5 @@ fn main() {
     let lab = get_lab();    
 
     let route = search_rooute(&init, &lab,0);
-    print_lab(&lab, route);
 
 }
