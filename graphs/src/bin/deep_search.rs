@@ -189,7 +189,7 @@ fn get_route(node: Box<Node>, objective: &'static str) {
                 FRONTIER.lock().unwrap().push(node.expand(action, state));
                 EXPLORED.lock().unwrap().insert(state);
             }
-        }
+        }   
         let next = FRONTIER.lock().unwrap().pop();
 
         get_route(Box::new(next.unwrap()), objective)

@@ -340,7 +340,7 @@ fn get_route(node: Box<Node>, objective: &'static str) {
             FRONTIER.lock().unwrap().push(node.expand(action, resolve(&node.state, action)));
         }
         else {
-            if EXPLORED.lock().unwrap().get(state).unwrap() > &resolve_score(&node.state, action) {
+            if EXPLORED.lock().unwrap().get(state).unwrap() < &resolve_score(&node.state, action) {
                 EXPLORED.lock().unwrap().insert(resolve(&node.state, action), resolve_score(&node.state, action));
                 FRONTIER.lock().unwrap().push(node.expand(action, resolve(&node.state, action)));
             }
@@ -371,6 +371,6 @@ fn main() {
 
     EXPLORED.lock().unwrap().insert("argentina", 0);
 
-    let objective: &str = "brazil";
+    let objective: &str = "united_states";
     get_route(Box::new(root_node), objective);
 }
